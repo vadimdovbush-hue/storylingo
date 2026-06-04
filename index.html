@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StoryLingo — Learn English Through Stories</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #e8a44a;
+      --gold-hover: #f0b85a;
+      --gold-dim: #c8862a;
+      --teal: #4ab8c8;
+      --teal-dim: #3a96a8;
+      --bg-main: #0d0f14;
+      --bg-card: #12151e;
+      --bg-elevated: #1a1f2e;
+      --bg-hover: #1e2438;
+      --border: #1e2233;
+      --border-mid: #2a2d3a;
+      --border-light: #3d4258;
+      --text-primary: #c8bfa8;
+      --text-muted: #7a8099;
+      --text-dim: #4a6070;
+      --text-faint: #3d4258;
+      --red: #e85a4a;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+      background: var(--bg-main);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.7;
+    }
+
+    /* ═══════════════════════════════════
+       SCREENS
+    ═══════════════════════════════════ */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ═══════════════════════════════════
+       GENERATOR SCREEN
+    ═══════════════════════════════════ */
+    .gen-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gen-hero {
+      background: linear-gradient(160deg, #0d0f14 0%, #141828 60%, #0d1220 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 52px 32px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .gen-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 40% at 50% 0%, #e8a44a0a 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-block;
+      border: 1px solid #e8a44a33;
+      border-radius: 20px;
+      padding: 5px 16px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .gen-hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 700;
+      color: #e8d5a8;
+      letter-spacing: 0.5px;
+      line-height: 1.15;
+      margin-bottom: 14px;
+      position: relative;
+    }
+    .gen-hero h1 span { color: var(--gold); }
+    .gen-hero p {
+      font-size: 16px;
+      color: var(--text-muted);
+      font-style: italic;
+      max-width: 480px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .gen-container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 36px 24px 60px;
+      width: 100%;
+    }
+
+    /* Words input */
+    .input-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-mid);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .card-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .words-textarea {
+      width: 100%;
+      background: var(--bg-main);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      color: var(--text-primary);
+      font-family: 'Source Serif 4', serif;
+      font-size: 15px;
+      line-height: 1.7;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s;
+      min-height: 100px;
+    }
+    .words-textarea:focus { border-color: #e8a44a44; }
+    .words-textarea::placeholder { color: var(--text-faint); font-style: italic; }
+
+    .words-hint {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 8px;
+      font-style: italic;
+    }
+
+    /* Settings grid */
+    .settings-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-mid);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 480px) {
+      .settings-grid { grid-template-columns: 1fr; }
+    }
+
+    .setting-group label {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .setting-group select {
+      width: 100%;
+      background: var(--bg-main);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--text-primary);
+      font-family: 'Source Serif 4', serif;
+      font-size: 14px;
+      padding: 10px 36px 10px 14px;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23e8a44a' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      transition: border-color 0.2s;
+    }
+    .setting-group select:focus { border-color: #e8a44a44; }
+    .setting-group select option { background: #1a1f2e; color: var(--text-primary); }
+
+    /* Generate button */
+    .gen-btn-wrap { position: relative; }
+    .gen-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--gold-dim) 0%, var(--gold) 50%, var(--gold-dim) 100%);
+      background-size: 200% 100%;
+      border: none;
+      border-radius: 10px;
+      color: #0d0f14;
+      font-family: 'Playfair Display', serif;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      padding: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+    }
+    .gen-btn:hover:not(:disabled) {
+      background-position: 100% 0;
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px #e8a44a25;
+    }
+    .gen-btn:active:not(:disabled) { transform: translateY(0); }
+    .gen-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .gen-btn .btn-shine {
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, #ffffff22, transparent);
+      transition: left 0.6s;
+    }
+    .gen-btn:hover:not(:disabled) .btn-shine { left: 150%; }
+
+    .status-msg {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 14px;
+      min-height: 22px;
+      font-style: italic;
+      transition: all 0.3s;
+    }
+
+    /* Loading dots */
+    .dots::after {
+      content: '';
+      animation: dots 1.2s steps(4, end) infinite;
+    }
+    @keyframes dots {
+      0%   { content: ''; }
+      25%  { content: '.'; }
+      50%  { content: '..'; }
+      75%  { content: '...'; }
+    }
+
+    /* ═══════════════════════════════════
+       READER SCREEN
+    ═══════════════════════════════════ */
+    .reader-page { min-height: 100vh; }
+
+    /* Top bar */
+    .reader-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13, 15, 20, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .back-btn {
+      background: none;
+      border: 1px solid var(--border-mid);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 12px;
+      padding: 7px 14px;
+      cursor: pointer;
+      font-family: 'Source Serif 4', serif;
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .back-btn:hover { color: var(--text-primary); border-color: var(--border-light); }
+
+    .topbar-center {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .story-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .meta-tag {
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 8px;
+    }
+
+    .progress-track {
+      background: var(--bg-card);
+      border-radius: 4px;
+      height: 3px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), var(--teal));
+      border-radius: 4px;
+      width: 0%;
+      transition: width 0.2s;
+    }
+    .progress-pct {
+      font-size: 11px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      min-width: 32px;
+      text-align: right;
+    }
+
+    /* Story body */
+    .reader-content {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 48px 32px 60px;
+    }
+    @media (max-width: 600px) {
+      .reader-content { padding: 32px 20px 48px; }
+    }
+
+    .story-text {
+      font-size: 18px;
+      line-height: 2;
+      color: var(--text-primary);
+      font-weight: 300;
+    }
+    .story-text p { margin-bottom: 1.4em; }
+
+    /* Vocab words in story */
+    .vw {
+      color: var(--gold);
+      cursor: pointer;
+      border-bottom: 1px solid #e8a44a44;
+      transition: all 0.15s;
+    }
+    .vw:hover { color: var(--gold-hover); border-bottom-color: var(--gold-hover); }
+    .vw.seen { color: var(--teal); border-bottom-color: #4ab8c844; }
+
+    /* Word popup */
+    .word-popup {
+      position: fixed;
+      background: var(--bg-elevated);
+      border: 1px solid #e8a44a33;
+      border-radius: 12px;
+      padding: 16px 20px;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.7), 0 0 0 1px #e8a44a11;
+      z-index: 9999;
+      max-width: 260px;
+      min-width: 180px;
+      display: none;
+    }
+    .word-popup.visible { display: block; }
+    .popup-en {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      color: var(--gold);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .popup-tr {
+      font-size: 12px;
+      color: var(--teal);
+      font-style: italic;
+      margin-bottom: 10px;
+      min-height: 16px;
+    }
+    .popup-uk {
+      font-size: 15px;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+    .popup-uk.loading { color: var(--text-faint); font-style: italic; }
+
+    /* Divider */
+    .reader-divider {
+      max-width: 720px;
+      margin: 0 auto;
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Vocab table */
+    .vocab-section {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 40px 32px 80px;
+    }
+    @media (max-width: 600px) {
+      .vocab-section { padding: 32px 20px 60px; }
+    }
+    .vocab-section h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: #e8d5a8;
+      margin-bottom: 6px;
+    }
+    .vocab-section .vocab-subtitle {
+      font-size: 13px;
+      color: var(--text-dim);
+      font-style: italic;
+      margin-bottom: 24px;
+    }
+
+    .vocab-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .vocab-table th {
+      text-align: left;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+    }
+    .vocab-table td {
+      padding: 12px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      font-size: 14px;
+    }
+    .vocab-table tr:last-child td { border-bottom: none; }
+    .vocab-table tr:hover td { background: var(--bg-card); }
+
+    .vt-en { color: var(--gold); font-weight: 600; font-size: 16px; font-family: 'Playfair Display', serif; }
+    .vt-tr { color: var(--teal); font-style: italic; font-size: 12px; }
+    .vt-uk { color: var(--text-primary); }
+    .vt-uk.loading { color: var(--text-faint); font-style: italic; }
+    .vt-seen { text-align: center; }
+    .vt-seen .dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--border-light);
+    }
+    .vt-seen .dot.active { background: var(--teal); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg-main); }
+    ::-webkit-scrollbar-thumb { background: var(--border-mid); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
+  </style>
+</head>
+<body>
+
+<!-- ═══ GENERATOR SCREEN ═══ -->
+<div class="screen active" id="screen-gen">
+  <div class="gen-page">
+    <div class="gen-hero">
+      <div class="hero-badge">AI Language Learning</div>
+      <h1>Story<span>Lingo</span></h1>
+      <p>Enter words you want to learn — get a personalized story that uses them naturally</p>
+    </div>
+
+    <div class="gen-container">
+      <!-- Words -->
+      <div class="input-card">
+        <div class="card-label">Words to learn</div>
+        <textarea
+          class="words-textarea"
+          id="words-input"
+          placeholder="exhausted, determined, bliss, wanderer, solitude&#10;&#10;Enter words separated by commas or new lines..."
+          rows="4"
+        ></textarea>
+        <div class="words-hint">Each word will appear multiple times in context. Up to 20 words.</div>
+      </div>
+
+      <!-- Settings -->
+      <div class="settings-card">
+        <div class="card-label">Story settings</div>
+        <div class="settings-grid">
+          <div class="setting-group">
+            <label>Topic</label>
+            <select id="sel-topic">
+              <option value="travel and adventure in Southeast Asia">✈ Travel & Adventure</option>
+              <option value="a romantic story about connection and love">❤ Romance</option>
+              <option value="business, startups and career ambitions">💼 Business</option>
+              <option value="a mystery or psychological thriller">🔍 Mystery / Thriller</option>
+              <option value="survival in nature and self-discovery">🌿 Nature & Survival</option>
+              <option value="personal growth, friendship and life lessons">🌟 Personal Growth</option>
+            </select>
+          </div>
+          <div class="setting-group">
+            <label>Story length</label>
+            <select id="sel-length">
+              <option value="300">300 words — quick read</option>
+              <option value="500" selected>500 words — short</option>
+              <option value="1000">1 000 words — medium</option>
+              <option value="2000">2 000 words — long</option>
+            </select>
+          </div>
+          <div class="setting-group">
+            <label>English level</label>
+            <select id="sel-level">
+              <option value="A1">A1 — Beginner</option>
+              <option value="A2" selected>A2 — Elementary</option>
+              <option value="B1">B1 — Intermediate</option>
+              <option value="B2">B2 — Upper-Intermediate</option>
+            </select>
+          </div>
+          <div class="setting-group">
+            <label>Repetitions per word</label>
+            <select id="sel-reps">
+              <option value="3" selected>3× — recommended</option>
+              <option value="5">5× — intensive</option>
+              <option value="8">8× — maximum</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Button -->
+      <div class="gen-btn-wrap">
+        <button class="gen-btn" id="gen-btn" onclick="generateStory()">
+          <span class="btn-shine"></span>
+          ✦ &nbsp;Generate Story
+        </button>
+        <div class="status-msg" id="status-msg"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ READER SCREEN ═══ -->
+<div class="screen" id="screen-reader">
+  <div class="reader-page">
+    <!-- Top bar -->
+    <div class="reader-topbar">
+      <button class="back-btn" onclick="showGenerator()">← New story</button>
+      <div class="topbar-center">
+        <div class="story-meta" id="story-meta"></div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+      <span class="progress-pct" id="progress-pct">0%</span>
+    </div>
+
+    <!-- Story -->
+    <div class="reader-content">
+      <div class="story-text" id="story-text"></div>
+    </div>
+
+    <hr class="reader-divider" />
+
+    <!-- Vocab table -->
+    <div class="vocab-section">
+      <h2>Vocabulary</h2>
+      <p class="vocab-subtitle">Click any highlighted word in the story to see its translation</p>
+      <table class="vocab-table">
+        <thead>
+          <tr>
+            <th>Word</th>
+            <th>Transcription</th>
+            <th>Ukrainian</th>
+            <th style="text-align:center">Read</th>
+          </tr>
+        </thead>
+        <tbody id="vocab-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Word popup -->
+<div class="word-popup" id="word-popup">
+  <div class="popup-en" id="popup-en"></div>
+  <div class="popup-tr" id="popup-tr"></div>
+  <div class="popup-uk loading" id="popup-uk">translating...</div>
+</div>
+
+<script>
+// ── Transcription dictionary ──────────────────────────────────────────────────
+const TRANSCR = {
+  exhausted:'ɪɡˈzɔːstɪd',determined:'dɪˈtɜːrmɪnd',bliss:'blɪs',
+  wanderer:'ˈwɒndərər',solitude:'ˈsɒlɪtjuːd',effort:'ˈefərt',
+  imperfectly:'ɪmˈpɜːrfɪktli',empty:'ˈempti',stood:'stʊd',
+  uncertain:'ʌnˈsɜːrtn',journey:'ˈdʒɜːrni',adventure:'ədˈventʃər',
+  beautiful:'ˈbjuːtɪfl',wonderful:'ˈwʌndərfl',amazing:'əˈmeɪzɪŋ',
+  discover:'dɪˈskʌvər',freedom:'ˈfriːdəm',courage:'ˈkʌrɪdʒ',
+  hope:'həʊp',dream:'driːm',believe:'bɪˈliːv',achieve:'əˈtʃiːv',
+  success:'səkˈses',failure:'ˈfeɪljər',opportunity:'ˌɒpəˈtjuːnɪti',
+  challenge:'ˈtʃælɪndʒ',grateful:'ˈɡreɪtfl',peaceful:'ˈpiːsfl',
+  passionate:'ˈpæʃənət',confident:'ˈkɒnfɪdənt',inspired:'ɪnˈspaɪərd',
+  anxious:'ˈæŋkʃəs',brave:'breɪv',calm:'kɑːm',curious:'ˈkjʊəriəs',
+  delicate:'ˈdelɪkət',elegant:'ˈelɪɡənt',fierce:'fɪərs',gentle:'ˈdʒentl',
+  humble:'ˈhʌmbl',innocent:'ˈɪnəsənt',joyful:'ˈdʒɔɪfl',keen:'kiːn',
+  lonely:'ˈləʊnli',mysterious:'mɪˈstɪəriəs',noble:'ˈnəʊbl',
+  patient:'ˈpeɪʃənt',quiet:'ˈkwaɪət',restless:'ˈrestləs',
+  sincere:'sɪnˈsɪər',tender:'ˈtendər',unique:'juːˈniːk',
+  vivid:'ˈvɪvɪd',weary:'ˈwɪəri',yearning:'ˈjɜːrnɪŋ',
+  exhaustion:'ɪɡˈzɔːstʃən',determination:'dɪˌtɜːrmɪˈneɪʃən',
+  wandering:'ˈwɒndərɪŋ',discover:'dɪˈskʌvər',discovery:'dɪˈskʌvəri',
+  beautiful:'ˈbjuːtɪfl',beauty:'ˈbjuːti',dreaming:'ˈdriːmɪŋ',
+  believe:'bɪˈliːv',belief:'bɪˈliːf',survive:'səˈvaɪv',
+  survival:'səˈvaɪvəl',escape:'ɪˈskeɪp',embrace:'ɪmˈbreɪs',
+  glimmer:'ˈɡlɪmər',shimmer:'ˈʃɪmər',whisper:'ˈwɪspər',
+  shadow:'ˈʃædəʊ',silence:'ˈsaɪləns',linger:'ˈlɪŋɡər',
+  hunger:'ˈhʌŋɡər',thirst:'θɜːrst',tremble:'ˈtrembl',
+  shiver:'ˈʃɪvər',wander:'ˈwɒndər',roam:'rəʊm',
+  stumble:'ˈstʌmbl',gather:'ˈɡæðər',scatter:'ˈskætər',
+  breathe:'briːð',exhale:'eksˈheɪl',inhale:'ɪnˈheɪl',
+  awaken:'əˈweɪkən',flourish:'ˈflʌrɪʃ',perish:'ˈperɪʃ'
+};
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let vocabWords = [];
+let seenWords  = new Set();
+let transCache = {};
+let currentMeta = {};
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function parseWords(raw) {
+  return [...new Set(
+    raw.split(/[\n,]+/)
+       .map(w => w.trim().toLowerCase())
+       .filter(w => w.length > 1 && /^[a-zA-Z]/.test(w))
+  )].slice(0, 20);
+}
+
+function setStatus(msg, color = '#4ab8c8', loading = false) {
+  const el = document.getElementById('status-msg');
+  el.style.color = color;
+  if (loading) {
+    el.innerHTML = `<span class="dots">${msg}</span>`;
+  } else {
+    el.textContent = msg;
+  }
+}
+
+function escapeRx(w) { return w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+function highlightWords(text, words) {
+  const sorted = [...words].sort((a, b) => b.length - a.length);
+  const rx = new RegExp(`\\b(${sorted.map(escapeRx).join('|')})\\b`, 'gi');
+  return text.replace(rx, (match) => {
+    const lw = match.toLowerCase();
+    return `<span class="vw" data-word="${lw}" onclick="onWordClick(event, this, '${lw}')">${match}</span>`;
+  });
+}
+
+// ── API call via Netlify function ─────────────────────────────────────────────
+async function callClaude(prompt) {
+  const res = await fetch('/.netlify/functions/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`);
+  return data.content[0].text;
+}
+
+// ── Translation via MyMemory ──────────────────────────────────────────────────
+async function translate(word) {
+  if (transCache[word]) return transCache[word];
+  try {
+    const r = await fetch(
+      `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=en|uk`
+    );
+    const d = await r.json();
+    const t = d.responseData?.translatedText || word;
+    transCache[word] = t;
+    return t;
+  } catch {
+    return word;
+  }
+}
+
+// ── Generate story ────────────────────────────────────────────────────────────
+async function generateStory() {
+  const rawWords = document.getElementById('words-input').value;
+  const words    = parseWords(rawWords);
+  if (!words.length) { setStatus('Please enter at least one word', '#e85a4a'); return; }
+
+  const topic  = document.getElementById('sel-topic').value;
+  const length = document.getElementById('sel-length').value;
+  const level  = document.getElementById('sel-level').value;
+  const reps   = document.getElementById('sel-reps').value;
+
+  const levelDesc = {
+    A1: 'Very simple short sentences. Only present and past tense. Basic vocabulary only.',
+    A2: 'Simple sentences. Common vocabulary. Basic grammar structures. Easy to follow.',
+    B1: 'Moderate complexity. Varied vocabulary. Some idioms are fine.',
+    B2: 'Rich vocabulary. Complex sentences. Natural idiomatic English. Vivid descriptions.'
+  }[level];
+
+  const prompt = `You are a creative writer and language teacher. Generate a ${length}-word story in English at ${level} level about: ${topic}.
+
+The story MUST naturally include these vocabulary words (${reps} times each):
+${words.join(', ')}
+
+Requirements:
+- Natural, engaging narrative — NOT educational-sounding. Real story with character and plot.
+- Each vocabulary word appears exactly ${reps} times throughout the story
+- Words fit naturally into the context — never forced
+- Level ${level}: ${levelDesc}
+- Approximately ${length} words total
+- Use paragraph breaks every 3-5 sentences
+
+Return ONLY the story text. No title. No commentary. Just the story.`;
+
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  setStatus('Generating your story', '#e8a44a', true);
+
+  try {
+    const story = await callClaude(prompt);
+    currentMeta = { topic, length, level, reps, words };
+    showReader(story, words, { topic, length, level });
+  } catch (err) {
+    setStatus('Error: ' + err.message, '#e85a4a');
+    console.error(err);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// ── Show reader ───────────────────────────────────────────────────────────────
+function showReader(storyText, words, meta) {
+  vocabWords = words;
+  seenWords  = new Set();
+
+  // Render story
+  const paras = storyText.split(/\n\n+/).filter(p => p.trim());
+  const html  = paras
+    .map(p => `<p>${highlightWords(p.trim(), words)}</p>`)
+    .join('');
+  document.getElementById('story-text').innerHTML = html;
+
+  // Meta tags
+  const levelLabels = { A1:'A1 Beginner', A2:'A2 Elementary', B1:'B1 Intermediate', B2:'B2 Upper-Intermediate' };
+  document.getElementById('story-meta').innerHTML = `
+    <span class="meta-tag">${levelLabels[meta.level]}</span>
+    <span class="meta-tag">${meta.length} words</span>
+    <span class="meta-tag">${words.length} vocab words</span>
+  `;
+
+  // Vocab table
+  buildVocabTable(words);
+  updateProgress();
+
+  // Pre-fetch all translations in background
+  words.forEach(w => translate(w).then(t => updateTableCell(w, t)));
+
+  // Switch screens
+  document.getElementById('screen-gen').classList.remove('active');
+  document.getElementById('screen-reader').classList.add('active');
+  window.scrollTo(0, 0);
+
+  // Listen scroll for progress
+  window.addEventListener('scroll', updateProgress, { passive: true });
+}
+
+function buildVocabTable(words) {
+  const tbody = document.getElementById('vocab-tbody');
+  tbody.innerHTML = '';
+  words.forEach(w => {
+    const tr = document.createElement('tr');
+    const tr_iph = TRANSCR[w] ? `/${TRANSCR[w]}/` : '—';
+    tr.innerHTML = `
+      <td class="vt-en">${w}</td>
+      <td class="vt-tr">${tr_iph}</td>
+      <td class="vt-uk loading" id="cell-${w}">...</td>
+      <td class="vt-seen"><span class="dot" id="dot-${w}"></span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function updateTableCell(word, translation) {
+  const cell = document.getElementById(`cell-${word}`);
+  if (cell) {
+    cell.textContent = translation;
+    cell.classList.remove('loading');
+  }
+}
+
+// ── Word click popup ──────────────────────────────────────────────────────────
+async function onWordClick(e, el, word) {
+  e.stopPropagation();
+
+  // Mark as seen
+  seenWords.add(word);
+  document.querySelectorAll(`.vw[data-word="${word}"]`).forEach(n => n.classList.add('seen'));
+  const dot = document.getElementById(`dot-${word}`);
+  if (dot) dot.classList.add('active');
+
+  // Show popup
+  const popup = document.getElementById('word-popup');
+  document.getElementById('popup-en').textContent = word;
+  document.getElementById('popup-tr').textContent = TRANSCR[word] ? `/${TRANSCR[word]}/` : '';
+  const ukEl = document.getElementById('popup-uk');
+  ukEl.textContent = 'translating...';
+  ukEl.classList.add('loading');
+
+  positionPopup(e, popup);
+  popup.style.display = 'block';
+
+  const trans = await translate(word);
+  ukEl.textContent = trans;
+  ukEl.classList.remove('loading');
+  updateTableCell(word, trans);
+}
+
+function positionPopup(e, popup) {
+  const margin = 12;
+  let x = e.clientX + margin;
+  let y = e.clientY + margin;
+  if (x + 260 > window.innerWidth)  x = e.clientX - 260 - margin;
+  if (y + 120 > window.innerHeight) y = e.clientY - 120 - margin;
+  popup.style.left = x + 'px';
+  popup.style.top  = y + 'px';
+}
+
+document.addEventListener('click', (e) => {
+  if (!e.target.classList.contains('vw')) {
+    document.getElementById('word-popup').style.display = 'none';
+  }
+});
+
+// ── Progress bar ──────────────────────────────────────────────────────────────
+function updateProgress() {
+  const scrolled = window.scrollY;
+  const total    = document.documentElement.scrollHeight - window.innerHeight;
+  const pct      = total > 0 ? Math.round((scrolled / total) * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-pct').textContent  = pct + '%';
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+function showGenerator() {
+  window.removeEventListener('scroll', updateProgress);
+  document.getElementById('screen-reader').classList.remove('active');
+  document.getElementById('screen-gen').classList.add('active');
+  window.scrollTo(0, 0);
+  document.getElementById('status-msg').textContent = '';
+}
+</script>
+</body>
+</html>
