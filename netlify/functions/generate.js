@@ -1,8 +1,3 @@
-Проблема знайдена! Ти випадково вставив `index.html` в `generate.js` — бачиш що `generate.js` містить HTML код замість JavaScript.
-
-Натисни олівець (Edit) на `generate.js` → виділи все (Cmd+A) → видали → вставляй правильний код:Ось правильний код для `generate.js` — скопіюй і встав замість HTML:
-
-```javascript
 exports.handler = async function (event) {
   if (event.httpMethod === 'OPTIONS') {
     return {
