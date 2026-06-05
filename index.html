@@ -916,7 +916,7 @@ function updateVocabProg(){
 function onSel(e){
   setTimeout(async ()=>{
     const sel=window.getSelection();
-    if(!sel||sel.isCollapsed)return;
+    if(!sel||sel.isCollapsed){document.getElementById('pop').classList.remove('on');return;}
     const text=sel.toString().trim();
     if(!text||text.length<2)return;
     selText=text;
