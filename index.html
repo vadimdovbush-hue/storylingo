@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,15 +15,6 @@
   --teal:#3eb8cc;--green:#2ec97a;--red:#e05555;--purple:#8b5cf6;
   --r1:14px;--r2:10px;--r3:7px;
 }
-body.light{
-  --bg:#f8f7f4;--s1:#ffffff;--s2:#f0ede8;--s3:#e8e4dc;--s4:#ddd8cc;
-  --b1:rgba(0,0,0,.05);--b2:rgba(0,0,0,.09);--b3:rgba(0,0,0,.14);--b4:rgba(0,0,0,.22);
-  --t1:#1a1a1a;--t2:#5a5a6a;--t3:#8a8a9a;--t4:#bcbcc8;
-  --goldg:rgba(200,168,74,.1);
-}
-body.light .s-body{color:#2a2a3a}
-body.light .vw{color:#a07820}
-body.light .vw.seen{color:#2a8a9a}
 html{scroll-behavior:smooth}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;-webkit-font-smoothing:antialiased}
 
@@ -310,7 +300,6 @@ hr.dv{max-width:800px;margin:0 auto 44px;border:none;border-top:1px solid var(--
     <div class="logo">Story<em>Lingo</em></div>
     <div class="nav-right">
       <span class="nav-badge">🇺🇸 AI English Learning</span>
-      <button class="nav-btn" onclick="toggleTheme()" id="theme-btn">☀ Light</button>
     </div>
   </nav>
 
@@ -438,7 +427,6 @@ hr.dv{max-width:800px;margin:0 auto 44px;border:none;border-top:1px solid var(--
   <div style="position:relative">
     <div class="rbar">
       <button class="rbtn back-btn" onclick="goBack()">← Back</button>
-      <button class="rbtn" onclick="toggleTheme()" id="theme-btn2">☀</button>
       <div class="rsep"></div>
       <button class="rbtn" id="lbtn" onclick="toggleListen()">▶ Listen</button>
       <button class="rbtn" id="vbtn" onclick="toggleVoicePanel()">⚙ Voice</button>
@@ -571,12 +559,6 @@ let selText='',selX=0,selY=0;
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded',()=>{
-  // Load theme
-  if(localStorage.getItem('sl_theme')==='light'){
-    document.body.classList.add('light');
-    const b1=document.getElementById('theme-btn');
-    if(b1)b1.textContent='🌙 Dark';
-  }
   // Load API key
   const k=localStorage.getItem('sl_key');
   if(k){document.getElementById('akey').value=k;document.getElementById('key-status').textContent='✓ Key saved';}
@@ -601,10 +583,14 @@ window.addEventListener('DOMContentLoaded',()=>{
   }
 
   // Close toolbar on click outside
-  document.addEventListener('click',e=>{
+  document.addEventListener('mousedown',e=>{
+  if(!e.target.closest('#pop')&&!e.target.classList.contains('vw')){
+    document.getElementById('pop').classList.remove('on');
+  }
+}); document.addEventListener('click',e=>{
     if(!e.target.closest('#sel-toolbar')&&!e.target.closest('.vw')){
       document.getElementById('sel-toolbar').classList.remove('on');
-      if(!e.target.closest('#pop'))selText='';
+      if(!e.target.closest('#pop')){selText='';document.getElementById('pop').classList.remove('on');}
     }
     if(!e.target.closest('#pop')&&!e.target.classList.contains('vw')){
       document.getElementById('pop').classList.remove('on');
@@ -740,15 +726,8 @@ function playClick(){try{const c=new(window.AudioContext||window.webkitAudioCont
 function getBestVoice(gender){
   if(!voices.length)return null;
   const enVoices=voices.filter(v=>v.lang.startsWith('en'));
-  if(!enVoices.length)return voices[0];
-  if(gender==='female'){
-    return enVoices.find(v=>/samantha|karen|victoria|moira|tessa|fiona|ava|allison|susan|zira|female|woman/i.test(v.name))
-      ||enVoices.find(v=>!/daniel|alex|david|mark|fred|tom|james|male|man/i.test(v.name))
-      ||enVoices[0];
-  }
-  return enVoices.find(v=>/daniel|alex|david|mark|fred|tom|james|male|man/i.test(v.name))
-    ||enVoices.find(v=>!/samantha|karen|victoria|moira|tessa|fiona|ava|allison|susan|zira|female|woman/i.test(v.name))
-    ||enVoices[1]||enVoices[0];
+  if(gender==='female')return enVoices.find(v=>/female|woman|girl|samantha|karen|victoria|moira|tessa|fiona|ava|allison|susan|zira/i.test(v.name))||enVoices[0]||voices[0];
+  return enVoices.find(v=>/male|man|daniel|alex|david|mark|fred|tom|james/i.test(v.name))||enVoices[0]||voices[0];
 }
 
 function speak(text,rate){
@@ -775,15 +754,6 @@ function toggleListen(){
 }
 
 function updateVoice(){voiceGender=document.getElementById('voice-sel').value;}
-function toggleTheme(){
-  const isLight=document.body.classList.toggle('light');
-  const label=isLight?'🌙 Dark':'☀ Light';
-  const b1=document.getElementById('theme-btn');
-  const b2=document.getElementById('theme-btn2');
-  if(b1)b1.textContent=label;
-  if(b2)b2.textContent=isLight?'🌙':'☀';
-  localStorage.setItem('sl_theme',isLight?'light':'dark');
-}
 function updateSpeed(v){speechRate=parseFloat(v);document.getElementById('speed-val').textContent=v+'×';}
 function toggleVoicePanel(){document.getElementById('voice-panel').classList.toggle('on');}
 
@@ -949,7 +919,7 @@ function updateVocabProg(){
 function onSel(e){
   setTimeout(async ()=>{
     const sel=window.getSelection();
-    if(!sel||sel.isCollapsed)return;
+    if(!sel||sel.isCollapsed){document.getElementById('pop').classList.remove('on');return;}
     const text=sel.toString().trim();
     if(!text||text.length<2)return;
     selText=text;
