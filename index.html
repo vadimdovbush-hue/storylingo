@@ -303,7 +303,7 @@ async function showPop(x,y,word,isPhrase){
   uk.textContent=t;uk.className='p-uk';
   if(!isPhrase)updCell(word,t);
 }
-document.addEventListener('click',e=>{if(!e.target.classList.contains('vw')&&!e.target.closest('.pbox')){document.getElementById('pop').classList.remove('on');window.getSelection()?.removeAllRanges();}});
+document.addEventListener('click',e=>{if(!e.target.classList.contains('vw')&&!e.target.closest('.pbox')){document.getElementById('pop').classList.remove('on');}});
 
 function buildTable(ws){const tb=document.getElementById('vtb');tb.innerHTML='';ws.forEach(w=>{const tr=document.createElement('tr');tr.innerHTML=`<td class="vw2">${w}</td><td class="vtr">${TR[w]?`/${TR[w]}/`:'—'}</td><td class="vuk l" id="c-${w}">…</td><td class="vstar" id="s-${w}" onclick="toggleFav('${w}')">⭐</td><td style="text-align:center"><span class="dot" id="d-${w}"></span></td>`;tb.appendChild(tr);});}
 function updCell(w,t){const c=document.getElementById('c-'+w);if(c){c.textContent=t;c.className='vuk';}}
