@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -91,7 +92,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 /* ─── WORDS TEXTAREA ─── */
 .words-wrap{background:var(--bg);border:1px solid var(--b2);border-radius:var(--r3);overflow:hidden;transition:border-color .2s}
 .words-wrap:focus-within{border-color:var(--b4)}
-#wi{display:block;width:100%;min-height:110px;background:transparent;border:none;padding:14px 16px;color:var(--t1);font-family:'Inter',sans-serif;font-size:15px;line-height:1.7;resize:vertical;outline:none;-webkit-user-select:text;user-select:text;cursor:text}
+#wi{display:block;width:100%;min-height:110px;background:var(--bg);border:1px solid rgba(255,255,255,0.08);border-radius:7px;padding:14px 16px;color:var(--t1);font-family:'Inter',sans-serif;font-size:15px;line-height:1.7;resize:vertical;outline:none;-webkit-user-select:text;user-select:text;cursor:text}
 #wi::placeholder{color:var(--t4)}
 .words-footer{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-top:1px solid var(--b1);background:var(--s1)}
 .wf-count{font-size:11px;color:var(--t4);font-family:'JetBrains Mono',monospace}
@@ -288,9 +289,9 @@ body.focus .abar,.body.focus .vsec,.body.focus .qsec{display:none}
         <div class="card-title">Vocabulary words</div>
         <div class="card-hint"><span id="wcount">0</span>/20 words</div>
       </div>
-      <div class="words-wrap">
+      
         <textarea id="wi" placeholder="exhausted, determined, bliss, wanderer, solitude&#10;&#10;Separate with commas or new lines…" oninput="countWords()"></textarea>
-        <div class="words-footer">
+        <div class="words-footer" style="border-top:1px solid rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#0c0e12">
           <span class="wf-count" id="wf-count">Enter your words above</span>
           <button class="wf-clear" onclick="clearWords()">Clear</button>
         </div>
