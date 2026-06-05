@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,8 +18,8 @@
   --teal:#3eb8cc;--green:#2ec97a;--red:#e05555;--purple:#8b5cf6;
   --r1:14px;--r2:10px;--r3:7px;
 }
-html{scroll-behavior:smooth}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 
 /* ── SCREENS ── */
 .screen{display:none}.screen.active{display:block;animation:fadeUp .35s ease}
@@ -101,7 +102,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 @media(max-width:768px){.mob-menu-btn{display:flex}.nav-badge{display:none}}
 
 .gen-layout{display:grid;grid-template-columns:240px 1fr 240px;gap:0;min-height:calc(100vh - 49px)}
-@media(max-width:1100px){.gen-layout{grid-template-columns:0 1fr 0}}
+@media(max-width:1100px){.gen-layout{display:block}}
 @media(max-width:1100px){.gen-sidebar{display:none!important}}
 
 /* ── MOBILE DRAWER ── */
@@ -206,7 +207,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
    READER SCREEN
 ══════════════════════════════════ */
 .reader-layout{display:grid;grid-template-columns:260px 1fr 260px;min-height:calc(100vh - 37px)}
-@media(max-width:1100px){.reader-layout{grid-template-columns:0 1fr 0}}
+@media(max-width:1100px){.reader-layout{display:block}}
 @media(max-width:1100px){.reader-sidebar{display:none!important}}
 
 .rbar{position:sticky;top:0;z-index:500;background:rgba(7,8,11,.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--b1);padding:0 16px;height:52px;display:flex;align-items:center;gap:8px}
