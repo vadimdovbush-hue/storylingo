@@ -587,7 +587,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.addEventListener('click',e=>{
     if(!e.target.closest('#sel-toolbar')&&!e.target.closest('.vw')){
       document.getElementById('sel-toolbar').classList.remove('on');
-      if(!e.target.closest('#pop'))selText='';
+      if(!e.target.closest('#pop')){selText='';document.getElementById('pop').classList.remove('on');}
     }
     if(!e.target.closest('#pop')&&!e.target.classList.contains('vw')){
       document.getElementById('pop').classList.remove('on');
