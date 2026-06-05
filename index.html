@@ -58,9 +58,9 @@
       position: relative;
       padding: 80px 32px 64px;
       text-align: center;
-      overflow: hidden;
+      /* overflow: hidden; */
     }
-    .hero-flag { z-index: 0;
+    .hero-flag { z-index: -1;
       position: absolute;
       inset: 0;
       opacity: 0.03;
@@ -71,7 +71,7 @@
         );
       pointer-events: none;
     }
-    .hero-flag::after {
+    .hero-flag::after { pointer-events: none;
       content: '🇺🇸';
       position: absolute;
       font-size: 180px;
