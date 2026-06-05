@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -815,7 +816,6 @@ async function xlateAny(text){
 async function gen(){
   words=parseWords(document.getElementById('words').value);
   if(!words.length){setSt('Enter at least one word','err');return;}
-  if(!getKey()){setSt('Enter your API key first','err');return;}
   const topic=document.getElementById('st').value,length=document.getElementById('sl').value;
   const level=document.getElementById('sv').value,reps=document.getElementById('sr').value;
   meta={topic,length,level,reps,words};
