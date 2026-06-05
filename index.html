@@ -584,18 +584,8 @@ window.addEventListener('DOMContentLoaded',()=>{
 
   // Close toolbar on click outside
   document.addEventListener('mousedown',e=>{
-  if(!e.target.closest('#pop')&&!e.target.classList.contains('vw')){
-    document.getElementById('pop').classList.remove('on');
-  }
-}); document.addEventListener('click',e=>{
-    if(!e.target.closest('#sel-toolbar')&&!e.target.closest('.vw')){
-      document.getElementById('sel-toolbar').classList.remove('on');
-      if(!e.target.closest('#pop')){selText='';document.getElementById('pop').classList.remove('on');}
-    }
-    if(!e.target.closest('#pop')&&!e.target.classList.contains('vw')){
+    if(!e.target.closest('#pop')&&!e.target.classList.contains('vw')&&!e.target.closest('#voice-panel')&&!e.target.closest('#vbtn')){
       document.getElementById('pop').classList.remove('on');
-    }
-    if(!e.target.closest('#voice-panel')&&!e.target.closest('#vbtn')){
       document.getElementById('voice-panel').classList.remove('on');
     }
   });
