@@ -20,52 +20,19 @@ nav{padding:18px 32px;display:flex;align-items:center;justify-content:space-betw
 .form{max-width:600px;margin:0 auto;padding:0 20px 80px}
 .card{background:#0e1018;border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:22px;margin-bottom:12px}
 .card-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#4a5068;font-weight:600;margin-bottom:14px}
-
-/* INPUT AREA - special design with guaranteed focus */
-.words-area{
-  position:relative;
-  background:#08090c;
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:8px;
-  overflow:hidden;
-  cursor:text;
-  min-height:120px;
-}
-.words-area:focus-within{border-color:rgba(200,168,74,.4)}
-.words-area textarea{
-  display:block;
-  width:100%;
-  min-height:120px;
-  background:transparent;
-  border:none;
-  padding:14px;
-  color:#e8eaf0;
-  font-family:'Inter',sans-serif;
-  font-size:15px;
-  line-height:1.7;
-  resize:none;
-  outline:none;
-  position:relative;
-  z-index:2;
-}
-.words-area textarea::placeholder{color:#333a50}
-.words-click-layer{
-  position:absolute;
-  inset:0;
-  z-index:1;
-  cursor:text;
-}
-
 input[type=password]{display:block;width:100%;background:#08090c;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:12px 14px;color:#e8eaf0;font-family:'Inter',sans-serif;font-size:14px;outline:none;margin-bottom:8px}
-input[type=password]:focus{border-color:rgba(255,255,255,.2)}
+input[type=password]:focus{border-color:rgba(255,255,255,.25)}
 input[type=password]::placeholder{color:#333a50}
+#words{display:block;width:100%;min-height:120px;background:#08090c;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px;color:#e8eaf0;font-family:'Inter',sans-serif;font-size:15px;line-height:1.7;resize:vertical;outline:none}
+#words:focus{border-color:rgba(200,168,74,.5)}
+#words::placeholder{color:#333a50}
 .hint{font-size:12px;color:#333a50;margin-top:7px}
 .hint a{color:#3eb8cc;text-decoration:none}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:480px){.grid{grid-template-columns:1fr}}
 label.sg-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#4a5068;font-weight:600;display:block;margin-bottom:7px}
 select{width:100%;background:#08090c;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#e8eaf0;font-family:'Inter',sans-serif;font-size:13px;padding:11px 32px 11px 12px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%234a5068' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
-select:focus{border-color:rgba(255,255,255,.2)}
+select:focus{border-color:rgba(255,255,255,.25)}
 select option{background:#111318}
 button.gen{width:100%;background:#c8a84a;border:none;border-radius:8px;color:#08090c;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;letter-spacing:1.5px;padding:16px;cursor:pointer;text-transform:uppercase;transition:all .25s;margin-top:4px}
 button.gen:hover:not(:disabled){background:#e2c06a;transform:translateY(-1px)}
@@ -144,7 +111,7 @@ table.vt tr:hover td{background:#0e1018}
 .ql{font-size:14px;color:#8b90a0;margin-bottom:18px}
 .qr{background:none;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#8b90a0;font-size:13px;padding:8px 16px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
 .qr:hover{border-color:rgba(255,255,255,.2);color:#e8eaf0}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#08090c}::-webkit-scrollbar-thumb{background:#1e2230;border-radius:4px}
+#words:empty::before{content:attr(data-ph);color:#333a50;pointer-events:none;white-space:pre-wrap}::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:#08090c}::-webkit-scrollbar-thumb{background:#1e2230;border-radius:4px}
 </style>
 </head>
 <body>
@@ -171,10 +138,7 @@ table.vt tr:hover td{background:#0e1018}
     </div>
     <div class="card">
       <div class="card-label">Words to learn (up to 20)</div>
-      <div class="words-area" id="words-area" onclick="focusTA()">
-        <textarea id="words" placeholder="exhausted, determined, bliss, wanderer, solitude&#10;&#10;Separate with commas or new lines…"></textarea>
-        <div class="words-click-layer" onclick="focusTA()"></div>
-      </div>
+      <div id="words" contenteditable="true" spellcheck="false" data-ph="exhausted, determined, bliss, wanderer, solitudeAASeparate with commas or new lines…" style="min-height:120px;background:#08090c;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px;color:#e8eaf0;font-family:Inter,sans-serif;font-size:15px;line-height:1.7;outline:none;white-space:pre-wrap;word-break:break-word;cursor:text;-webkit-user-modify:read-write;"></div>
       <div class="hint">Each word will appear multiple times in context</div>
     </div>
     <div class="card">
@@ -254,35 +218,15 @@ table.vt tr:hover td{background:#0e1018}
 </div>
 
 <script>
-// Force focus on textarea when clicking anywhere in the words area
-function focusTA() {
-  const ta = document.getElementById('words');
-  ta.focus();
-  // Move cursor to end
-  const len = ta.value.length;
-  ta.setSelectionRange(len, len);
-}
-
-// Also init click layer
-document.addEventListener('DOMContentLoaded', function() {
-  const k = localStorage.getItem('sl_key');
-  if (k) document.getElementById('akey').value = k;
-  
-  // Make entire words-area clickable
-  const area = document.getElementById('words-area');
-  area.addEventListener('click', function(e) {
-    focusTA();
-  });
-  area.addEventListener('touchend', function(e) {
-    e.preventDefault();
-    focusTA();
-  });
-});
-
 const TR={exhausted:'ɪɡˈzɔːstɪd',determined:'dɪˈtɜːrmɪnd',bliss:'blɪs',wanderer:'ˈwɒndərər',solitude:'ˈsɒlɪtjuːd',effort:'ˈefərt',empty:'ˈempti',uncertain:'ʌnˈsɜːrtn',journey:'ˈdʒɜːrni',adventure:'ədˈventʃər',beautiful:'ˈbjuːtɪfl',discover:'dɪˈskʌvər',freedom:'ˈfriːdəm',courage:'ˈkʌrɪdʒ',hope:'həʊp',dream:'driːm',believe:'bɪˈliːv',achieve:'əˈtʃiːv',success:'səkˈses',grateful:'ˈɡreɪtfl',peaceful:'ˈpiːsfl',passionate:'ˈpæʃənət',confident:'ˈkɒnfɪdənt',anxious:'ˈæŋkʃəs',brave:'breɪv',calm:'kɑːm',curious:'ˈkjʊəriəs',fierce:'fɪərs',gentle:'ˈdʒentl',humble:'ˈhʌmbl',joyful:'ˈdʒɔɪfl',lonely:'ˈləʊnli',patient:'ˈpeɪʃənt',quiet:'ˈkwaɪət',restless:'ˈrestləs',sincere:'sɪnˈsɪər',unique:'juːˈniːk',vivid:'ˈvɪvɪd',weary:'ˈwɪəri',yearning:'ˈjɜːrnɪŋ',flourish:'ˈflʌrɪʃ',whisper:'ˈwɪspər',shadow:'ˈʃædəʊ',silence:'ˈsaɪləns',tremble:'ˈtrembl',wander:'ˈwɒndər',breathe:'briːð',survive:'səˈvaɪv',escape:'ɪˈskeɪp',embrace:'ɪmˈbreɪs',glimmer:'ˈɡlɪmər',shiver:'ˈʃɪvər',challenge:'ˈtʃælɪndʒ'};
 let words=[],seen=new Set(),favs=new Set(),cache={},meta={},prompt='';
 let tSec=0,tInt=null,speaking=false;
 let quiz={qs:[],idx:0,score:0};
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const k=localStorage.getItem('sl_key');
+  if(k)document.getElementById('akey').value=k;
+});
 
 function saveKey(){const k=document.getElementById('akey').value.trim();if(k)localStorage.setItem('sl_key',k);setSt('Key saved ✓');}
 function getKey(){return document.getElementById('akey').value.trim()||localStorage.getItem('sl_key')||'';}
@@ -310,7 +254,7 @@ async function xlate(w){if(cache[w])return cache[w];try{const r=await fetch(`htt
 async function xlateP(p){try{const r=await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(p.slice(0,200))}&langpair=en|uk`);const d=await r.json();return d.responseData?.translatedText||'';}catch{return '';}}
 
 async function gen(){
-  words=parseWords(document.getElementById('words').value);
+  words=parseWords(document.getElementById('words').innerText);
   if(!words.length){setSt('Enter at least one word to learn','err');return;}
   if(!getKey()){setSt('Enter your API key first','err');return;}
   const topic=document.getElementById('st').value,length=document.getElementById('sl').value,level=document.getElementById('sv').value,reps=document.getElementById('sr').value;
