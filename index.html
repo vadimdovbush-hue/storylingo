@@ -292,12 +292,6 @@ hr.dv{max-width:800px;margin:0 auto 44px;border:none;border-top:1px solid var(--
   </div>
 </div>
 
-<!-- Selection toolbar -->
-<div id="sel-toolbar">
-  <button class="sel-btn teal" onclick="speakSelection()">🔊 Listen</button>
-  <button class="sel-btn" onclick="translateSelection()">🇺🇦 Translate</button>
-</div>
-
 <!-- ═══════════════════════════
      GENERATOR SCREEN
 ═══════════════════════════ -->
@@ -593,6 +587,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.addEventListener('click',e=>{
     if(!e.target.closest('#sel-toolbar')&&!e.target.closest('.vw')){
       document.getElementById('sel-toolbar').classList.remove('on');
+      if(!e.target.closest('#pop'))selText='';
     }
     if(!e.target.closest('#pop')&&!e.target.classList.contains('vw')){
       document.getElementById('pop').classList.remove('on');
@@ -919,27 +914,40 @@ function updateVocabProg(){
 
 // ── Selection handling ────────────────────────────────────────────────────────
 function onSel(e){
-  setTimeout(()=>{
+  setTimeout(async ()=>{
     const sel=window.getSelection();
     if(!sel||sel.isCollapsed)return;
     const text=sel.toString().trim();
     if(!text||text.length<2)return;
     selText=text;
-    const rect=sel.getRangeAt(0).getBoundingClientRect();
-    const toolbar=document.getElementById('sel-toolbar');
-    let left=rect.left+window.scrollX;
-    let top=rect.top+window.scrollY-44;
-    if(left+200>window.innerWidth)left=window.innerWidth-210;
-    toolbar.style.left=left+'px';
-    toolbar.style.top=top+'px';
-    toolbar.classList.add('on');
+    window._lastSelText=text;
     selX=e.clientX;selY=e.clientY;
-  },50);
+    // Show popup immediately
+    const isWord=/^\w+$/.test(text);
+    const display=text.length>30?text.slice(0,30)+'…':text;
+    document.getElementById('pw').textContent=display;
+    document.getElementById('ptr').textContent=(isWord&&TR[text.toLowerCase()])?`/${TR[text.toLowerCase()]}/`:'';
+    document.getElementById('p-speak-btn').style.display='flex';
+    const uk=document.getElementById('puk');uk.textContent='translating…';uk.className='p-uk l';
+    const pop=document.getElementById('pop');
+    const pw=280,ph=150;
+    let left=e.clientX+14,top=e.clientY+14;
+    if(left+pw>window.innerWidth-10)left=e.clientX-pw-14;
+    if(top+ph>window.innerHeight-10)top=e.clientY-ph-14;
+    pop.style.left=left+'px';pop.style.top=top+'px';pop.classList.add('on');
+    // Set speak button to speak selection
+    currentWord=text;
+    const t=isWord?await xlate(text.toLowerCase()):await xlateAny(text);
+    uk.textContent=t||text;uk.className='p-uk';
+    if(isWord)updCell(text.toLowerCase(),t);
+  },120);
 }
 
 async function translateSelection(){
   const toolbar=document.getElementById('sel-toolbar');
-  if(!selText)return;
+  const text=selText||window._lastSelText||'';
+  if(!text)return;
+  selText=text;
   // Show in popup
   currentWord=selText.length>25?selText.slice(0,25)+'…':selText;
   document.getElementById('pw').textContent=currentWord;
