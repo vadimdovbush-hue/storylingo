@@ -1020,6 +1020,7 @@ function countWords() {
 function clearWords() { document.getElementById('words').value = ''; countWords(); }
 function parseWords(r) {
   return [...new Set(r.split(/[\n,;. ]+/).map(w=>w.trim().toLowerCase()).filter(w=>w.length>1&&/^[a-z]/i.test(w)))].slice(0, MAX_WORDS);
+}
 
 
 // ════════════════════════════════════════════════════════
