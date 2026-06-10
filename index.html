@@ -1218,7 +1218,7 @@ function loader(v) {
 // API
 // ════════════════════════════════════════════════════════
 async function api(p) {
-  const r = await fetch('/.netlify/functions/generate', {
+  const r = await fetch('/api/generate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ messages: [{ role: 'user', content: p }] })
